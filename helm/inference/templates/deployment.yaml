@@ -1,0 +1,56 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+  name: "{{ .Values.name }}-yolo"
+  namespace: edge
+  labels:
+    type: yolo
+    app: "{{ .Values.name }}-yolo"
+    app.kubernetes.io/component: "{{ .Values.name }}-yolo"
+    app.kubernetes.io/instance: "{{ .Values.name }}-yolo"
+    app.kubernetes.io/name: "{{ .Values.name }}-yolo"
+    app.openshift.io/runtime-namespace: edge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Values.name }}-yolo"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.name }}-yolo"
+        deployment: "{{ .Values.name }}-yolo"
+    spec:
+      containers:
+        - name: "{{ .Values.name }}-yolo"
+          image: quay.io/rh_ee_cschmitz/yolo:v1
+          env:
+            - name: SOURCE_NAME
+              value: "{{ .Values.name }}"
+            - name: SOURCE_SERVER
+              value: "rtsp://mediamtx:8554"
+            - name: SINK_SERVER
+              value: "rtsp://mediamtx:8554"
+            - name: SINK_NAME
+              value: "{{ .Values.name }}-yolo"
+          resources:
+            limits:
+              cpu: 16
+            requests:
+              cpu: 1
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
