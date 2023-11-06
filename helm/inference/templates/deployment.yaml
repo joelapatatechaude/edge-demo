@@ -23,7 +23,7 @@ spec:
         deployment: "{{ .Values.name }}-yolo"
     spec:
       containers:
-        - name: "{{ .Values.name }}-yolo"
+        - name: "yolo"
           image: quay.io/rh_ee_cschmitz/yolo:v1
           env:
             - name: SOURCE_NAME
