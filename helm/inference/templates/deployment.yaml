@@ -6,6 +6,7 @@ metadata:
   namespace: edge
   labels:
     type: yolo
+    current_yolo_version: v1
     app: "{{ .Values.name }}-yolo"
     app.kubernetes.io/component: "{{ .Values.name }}-yolo"
     app.kubernetes.io/instance: "{{ .Values.name }}-yolo"
@@ -22,9 +23,18 @@ spec:
         app: "{{ .Values.name }}-yolo"
         deployment: "{{ .Values.name }}-yolo"
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  type: yolo
+              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: "yolo"
-          image: quay.io/rh_ee_cschmitz/yolo:v1
+          image: yolo:v1
           env:
             - name: SOURCE_NAME
               value: "{{ .Values.name }}"
@@ -36,12 +46,12 @@ spec:
               value: "{{ .Values.name }}-yolo"
           resources:
             limits:
-              cpu: 16
+              cpu: "{{ .Values.limit_cpu }}"
             requests:
-              cpu: 1
+              cpu: "{{ .Values.request_cpu }}"
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst

@@ -11,12 +11,16 @@ spec:
       backoffLimit: 8
       activeDeadlineSeconds: 600
       template:
+        metadata:
+          annotations:
+            alpha.image.policy.openshift.io/resolve-names: '*'
         spec:
           serviceAccountName: cron-sa
           restartPolicy: Never
           containers:
             - name: "{{ .Values.name }}-cron"
-              image: quay.io/rh_ee_cschmitz/ose-cli-edge:latest
+              image: ose-cli-edge:latest
+              imagePullPolicy: IfNotPresent
               env:
               - name: DEPLOYMENT_NAME
                 value: "{{ .Values.name }}-yolo"

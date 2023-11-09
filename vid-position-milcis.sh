@@ -24,7 +24,8 @@ Y_SIZE_BROWSER=$((1440 - $TITLE_PIXEL_SIZE  - $MENU_PIXEL_SIZE))
 #CHROME_URL="https://en.wikipedia.org/wiki/Main_Page"
 #CHROME_TITLE="Topology - Red Hat OpenShift - Google Chrome"
 CHROME_TITLE="Red Hat OpenShift - Google Chrome"
-CHROME_URL="https://console-openshift-console.apps.hub.sandbox2868.opentlc.com/topology/ns/edge?view=graph"
+#CHROME_URL="https://console-openshift-console.apps.hub.sandbox2868.opentlc.com/topology/ns/edge?view=graph"
+CHROME_URL="https://console-openshift-console.apps.hpe3.cszevaco.com/topology/ns/edge?view=graph"
 
 PI_BEFORE_NAME=pi
 PI_AFTER_NAME=pi-yolo
