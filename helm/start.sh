@@ -3,7 +3,7 @@ HOST=mediamtx
 API_PORT=9997
 #HOST=mediamtx.cszevaco.com
 #API_PORT=30997
-echo "TEST new label current_yolo_version"
+echo "TEST gpu templating"
 echo "LIMIT_CPU: $LIMIT_CPU"
 echo "REQUEST_CPU: $REQUEST_CPU"
 
@@ -29,8 +29,11 @@ function add_missing {
 	done
 	if [ "$exist" == "0" ]; then
 	    echo "/!\ creating $i deployment"
+	    GPU=$(echo $i | grep -v gpu)
+	    GPU="$?"
+	    echo "GPU: $GPU"
 	    #helm install --set name=$i $i /inference-0.1.0.tgz
-	    helm install --set name=$i --set limit_cpu=$LIMIT_CPU --set request_cpu=$REQUEST_CPU  $i /inference
+	    helm install --set name=$i --set limit_cpu=$LIMIT_CPU --set request_cpu=$REQUEST_CPU --set gpu=$GPU  $i /inference
 	fi
     done
 }

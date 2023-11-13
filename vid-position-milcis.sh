@@ -7,7 +7,8 @@ BORDER_PIXEL_SIZE=8
 #RTSP_PORT=8554
 #API_PORT=9997
 
-HOST=52.62.160.219
+#HOST=52.62.160.219
+HOST=mediamtx.cszevaco.com
 RTSP_PORT=30554
 WEBRTC_PORT=30889
 API_PORT=30997
@@ -143,7 +144,7 @@ function main_browser {
     if [ "$THEWINID" == "" ]; then
 	echo "no  browser, creating"
 	create_browser
-	sleep 0.1
+	sleep 1
     fi
     THEWINID=$(get_browser_id "${CHROME_TITLE}")
     if [ "$THEWINID" == "" ]; then
@@ -177,17 +178,22 @@ function small_tile {
 
 
 function main_ffplay {
+
     THEJSON=$(curl -s $HOST:$API_PORT/v2/paths/list | jq .)
     TOTAL_COUNT=$(echo $THEJSON | jq .itemCount)
     NAME_LIST=$(echo $THEJSON | jq .items[].name -r | sort)
+    TOTAL_COUNT_YOLO=$(echo "$NAME_LIST" | grep "\-yolo$" | wc -w)
+    
     count=0
 
-    NO_PI_COUNT=$TOTAL_COUNT
+    NO_PI_COUNT=$TOTAL_COUNT_YOLO
     for i in $NAME_LIST; do
-	if  [ "$i" == "$PI_BEFORE_NAME" ] || [ "$i" == "$PI_AFTER_NAME" ]; then
+	#if  [ "$i" == "$PI_BEFORE_NAME" ] || [ "$i" == "$PI_AFTER_NAME" ]; then
+	if  [ "$i" == "$PI_AFTER_NAME" ]; then
 	    NO_PI_COUNT=$(($NO_PI_COUNT - 1))
 	fi
     done
+    echo "NOPICOUNT=$NO_PI_COUNT"
 
     #echo "TOTAL COUNT = $TOTAL_COUNT and NO_PI_COUNT=$NO_PI_COUNT"
 
@@ -213,7 +219,7 @@ function main_ffplay {
 	    echo "no window, creating"
 	    #create_ffplay $i
 	    create_webrtc $i
-	    sleep 0.1
+	    sleep 0.5
 	fi
 	THEWINID=$(get_window_id $i)
 	if [ "$THEWINID" == "" ]; then
@@ -225,6 +231,7 @@ function main_ffplay {
 		place_pi_after $THEWINID
 	    else
 		if [ $NO_PI_COUNT -lt 7 ]; then
+		    echo "Warning NO PI COUNT THreshold $NO_PI_COUNT -lt 7"
 		    normal_tile $THEWINID $count
 		else
 		    small_tile $THEWINID $count
@@ -235,7 +242,7 @@ function main_ffplay {
     done
 }
 
-while true; do main_browser; main_ffplay; sleep 0.1; prune_webrtc; done
+while true; do main_browser; main_ffplay; sleep 0.5; prune_webrtc; done
 
 exit
 
